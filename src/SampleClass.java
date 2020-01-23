@@ -1,3 +1,4 @@
+import jdk.internal.util.xml.impl.Input;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -10,46 +11,28 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class SampleClass {
-    private WebDriver driver;
-    private boolean success;
+    protected WebDriver driver;
+    protected boolean success;
 
-    public void chrome() throws IOException {
-        InputStream stream = SampleClass.class.getClassLoader().getResourceAsStream("webdrivers/chromedriver");
-        if (stream != null) {
-            this.extractDriver(stream, "chromedriver");
+    SampleClass(String browser) throws IOException {
+        this.success = true;
+
+        switch (browser) {
+            case "chrome":
+                this.chrome();
+                break;
+            case "firefox":
+                this.firefox();
+                break;
+            default:
+                System.out.println("invalid driver name. choose one between chrome or firefox");
+                System.exit(1);
         }
-
-        System.setProperty("webdriver.chrome.driver", System.getProperty("java.io.tmpdir") + "chromedriver");
-        this.driver = new ChromeDriver();
-    }
-
-    public void firefox() throws IOException {
-        InputStream stream = SampleClass.class.getClassLoader().getResourceAsStream("webdrivers/geckodriver");
-        if (stream != null) {
-            this.extractDriver(stream, "geckodriver");
-        }
-
-        System.setProperty("webdriver.gecko.driver", System.getProperty("java.io.tmpdir") + "geckodriver");
-        this.driver = new FirefoxDriver();
     }
 
     public void run() {
-        this.driver.get("https://www.google.com");
-
-        assertAttributeValueOfElementByClass("gNO89b", "value", "Google Search");
-        assertAttributeValueOfElementByClass("RNmpXc", "value", "I'm Feeling Lucky");
-
-        assertAttributeValueOfElementById("hplogo", "alt", "Google");
-
-        assertAttributeValueOfElementByXPath("//*[@id=\"fsl\"]/a[4]", "text", "  How Search works ");
-
         this.driver.close();
-
-        if (this.success) {
-            System.out.println("Test finished successfully");
-        } else {
-            System.err.println("Test finished with errors");
-        }
+        System.out.println("override run method in your class to run the tests...");
     }
 
     public void assertAttributeValueOfElementByClass(String className, String attributeName, String expectedValue) {
@@ -74,6 +57,26 @@ public class SampleClass {
             this.success = false;
             System.err.printf("FAILED for attribute %s. Expected %s Got %s\n", attributeName, expectedValue, value);
         }
+    }
+
+    private void chrome() throws IOException {
+        InputStream stream = SampleClass.class.getClassLoader().getResourceAsStream("webdrivers/chromedriver");
+        if (stream != null) {
+            this.extractDriver(stream, "chromedriver");
+        }
+
+        System.setProperty("webdriver.chrome.driver", System.getProperty("java.io.tmpdir") + "chromedriver");
+        this.driver = new ChromeDriver();
+    }
+
+    private void firefox() throws IOException {
+        InputStream stream = SampleClass.class.getClassLoader().getResourceAsStream("webdrivers/geckodriver");
+        if (stream != null) {
+            this.extractDriver(stream, "geckodriver");
+        }
+
+        System.setProperty("webdriver.gecko.driver", System.getProperty("java.io.tmpdir") + "geckodriver");
+        this.driver = new FirefoxDriver();
     }
 
     private void extractDriver(InputStream stream, String filename) throws IOException {
