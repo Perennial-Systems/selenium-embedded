@@ -1,4 +1,3 @@
-import jdk.internal.util.xml.impl.Input;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -89,6 +88,9 @@ public class SampleClass {
             fos.write(buf, 0, r);
         }
 
-        f.setExecutable(true, false);
+        boolean res = f.setExecutable(true, false);
+        if (!res) {
+            System.err.println("unable to add executable permissions to driver");
+        }
     }
 }
